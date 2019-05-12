@@ -1,0 +1,31 @@
+{
+  "name": "berbix-vue",
+  "version": "0.0.1",
+  "description": "Vue SDK for the Berbix Verify flow",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src --out-file index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/berbix/berbix-vue.git"
+  },
+  "keywords": [
+    "berbix",
+    "vue",
+    "identity"
+  ],
+  "files": [
+    "index.js"
+  ],
+  "author": "Eric Levine <eric@berbix.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/berbix/berbix-vue/issues"
+  },
+  "homepage": "https://github.com/berbix/berbix-vue#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4"
+  }
+}
