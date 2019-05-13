@@ -47,14 +47,12 @@ export default {
       if (overrideUrl != null) {
         return overrideUrl;
       }
-      const result = (this.makeBaseUrl() + '/' + version + '/verify') +
+      return (this.makeBaseUrl() + '/' + version + '/verify') +
         ('?client_id=' + clientId) +
         ('&role=' + role) +
         (email ? '&email=' + encodeURIComponent(email) : '') +
         (phone ? '&phone=' + encodeURIComponent(phone) : '') +
         (continuation ? '&continuation=' + continuation : '');
-      //console.log(result);
-      return result;
     },
     handleMessage: function(e) {
       if (e.origin !== this.makeBaseUrl()) {
