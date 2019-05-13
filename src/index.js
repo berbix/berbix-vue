@@ -89,10 +89,14 @@ export default {
     },
   },
   created() {
-    window.addEventListener('message', this.handleMessage);
+    if (typeof(window) !== 'undefined') {
+      window.addEventListener('message', this.handleMessage);
+    }
   },
   destroyed() {
-    window.removeEventListener('message', this.handleMessage);
+    if (typeof(window) !== 'undefined') {
+      window.removeEventListener('message', this.handleMessage);
+    }
   },
   render(createElement) {
     if (this.show) {
