@@ -19,6 +19,7 @@ export default {
     email: String,
     phone: String,
     continuation: String,
+    clientToken: String,
   },
   data() {
     return {
@@ -43,16 +44,17 @@ export default {
       }
     },
     frameUrl() {
-      const { overrideUrl, version, clientId, role, email, phone, continuation } = this;
+      const { overrideUrl, version, clientId, role, email, phone, continuation, clientToken } = this;
       if (overrideUrl != null) {
         return overrideUrl;
       }
+      const token = clientToken || continuation;
       return (this.makeBaseUrl() + '/' + version + '/verify') +
         ('?client_id=' + clientId) +
         ('&role=' + role) +
         (email ? '&email=' + encodeURIComponent(email) : '') +
         (phone ? '&phone=' + encodeURIComponent(phone) : '') +
-        (continuation ? '&continuation=' + continuation : '');
+        (token ? '&client_token=' + token : '');
     },
     handleMessage: function(e) {
       if (e.origin !== this.makeBaseUrl()) {

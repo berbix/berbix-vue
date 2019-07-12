@@ -60,6 +60,7 @@ props: {
   email: String,
   phone: String,
   continuation: String,
+  clientToken: String,
 }
 ```
 
