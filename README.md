@@ -15,7 +15,7 @@ This Berbix Vue.js library provides simple interfaces to interact with the Berbi
   <div id="app">
     <BerbixVerify
       clientId="your_client_id"
-      role="your_role_key"
+      templateKey="your_template_key"
       @complete="handleComplete"
     />
   </div>
@@ -38,29 +38,15 @@ export default {
 </script>
 ```
 
-### Full props
+### Props
 
 ```js
 props: {
   clientId: String,
-  role: String,
-  baseUrl: String,
-  environment: {
-    type: String,
-    default: 'production',
-    validator: function(value) {
-      return ['production', 'staging', 'sandbox'].indexOf(value) !== -1;
-    },
-  },
-  overrideUrl: String,
-  version: {
-    type: String,
-    default: 'v0',
-  },
+  clientToken: String,
+  templateKey: String,
   email: String,
   phone: String,
-  continuation: String,
-  clientToken: String,
 }
 ```
 

@@ -1,9 +1,16 @@
 export default {
   name: 'BerbixVerify',
   props: {
+    // Required
     clientId: String,
-    role: String,
-    baseUrl: String,
+
+    // Configuration
+    templateKey: String,
+    email: String,
+    phone: String,
+    clientToken: String,
+
+    // Internal use
     environment: {
       type: String,
       default: 'production',
@@ -11,15 +18,16 @@ export default {
         return ['production', 'staging', 'sandbox'].indexOf(value) !== -1;
       },
     },
+    baseUrl: String,
     overrideUrl: String,
     version: {
       type: String,
       default: 'v0',
     },
-    email: String,
-    phone: String,
+
+    // Deprecated
     continuation: String,
-    clientToken: String,
+    role: String,
   },
   data() {
     return {
@@ -44,14 +52,15 @@ export default {
       }
     },
     frameUrl() {
-      const { overrideUrl, version, clientId, role, email, phone, continuation, clientToken } = this;
+      const { overrideUrl, version, clientId, role, templateKey, email, phone, continuation, clientToken } = this;
       if (overrideUrl != null) {
         return overrideUrl;
       }
       const token = clientToken || continuation;
+      const template = templateKey || role;
       return (this.makeBaseUrl() + '/' + version + '/verify') +
         ('?client_id=' + clientId) +
-        ('&role=' + role) +
+        (template ? '&template=' + template : '') +
         (email ? '&email=' + encodeURIComponent(email) : '') +
         (phone ? '&phone=' + encodeURIComponent(phone) : '') +
         (token ? '&client_token=' + token : '');
