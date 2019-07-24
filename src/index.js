@@ -1,3 +1,5 @@
+const SDK_VERSION = '0.0.5';
+
 export default {
   name: 'BerbixVerify',
   props: {
@@ -63,7 +65,8 @@ export default {
         (template ? '&template=' + template : '') +
         (email ? '&email=' + encodeURIComponent(email) : '') +
         (phone ? '&phone=' + encodeURIComponent(phone) : '') +
-        (token ? '&client_token=' + token : '');
+        (token ? '&client_token=' + token : '') +
+        ('&sdk=BerbixVue-' + SDK_VERSION);
     },
     handleMessage: function(e) {
       if (e.origin !== this.makeBaseUrl()) {
