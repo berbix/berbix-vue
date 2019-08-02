@@ -97,6 +97,7 @@ export default {
         this.$emit('state-change', data.payload);
       } else if (data.type === 'ERROR_RENDERED') {
         this.$emit('error', data.payload);
+        this.height = 200;
       }
     },
   },
@@ -128,6 +129,7 @@ export default {
           src: this.frameUrl(),
           allow: "camera",
           scrolling: "no",
+          referrerpolicy: "no-referrer-when-downgrade",
         },
       })
     }
