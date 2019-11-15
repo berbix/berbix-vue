@@ -60,13 +60,23 @@ export default {
       }
       const token = clientToken || continuation;
       const template = templateKey || role;
-      return (this.makeBaseUrl() + '/' + version + '/verify') +
-        ('?client_id=' + clientId) +
-        (template ? '&template=' + template : '') +
-        (email ? '&email=' + encodeURIComponent(email) : '') +
-        (phone ? '&phone=' + encodeURIComponent(phone) : '') +
-        (token ? '&client_token=' + token : '') +
-        ('&sdk=BerbixVue-' + SDK_VERSION);
+      var options = ['sdk=BerbixVue-' + SDK_VERSION];
+      if (clientId) {
+        options.push('client_id=' + clientId);
+      }
+      if (template) {
+        options.push('template=' + template);
+      }
+      if (email) {
+        options.push('email=' + encodeURIComponent(email));
+      }
+      if (phone) {
+        options.push('phone=' + encodeURIComponent(phone));
+      }
+      if (token) {
+        options.push('client_token=' + token);
+      }
+      return (this.makeBaseUrl() + '/' + version + '/verify?') + options.join('&');
     },
     handleMessage: function(e) {
       if (e.origin !== this.makeBaseUrl()) {
