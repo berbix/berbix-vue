@@ -14,8 +14,7 @@ This Berbix Vue.js library provides simple interfaces to interact with the Berbi
 <template>
   <div id="app">
     <BerbixVerify
-      clientId="your_client_id"
-      templateKey="your_template_key"
+      clientToken="your_client_token"
       @complete="handleComplete"
     />
   </div>
@@ -42,9 +41,7 @@ export default {
 
 ```js
 props: {
-  clientId: String,
   clientToken: String,
-  templateKey: String,
   email: String,
   phone: String,
 }
@@ -54,10 +51,10 @@ props: {
 
 The following events are emitted from the component:
 
-* `display`: fires when the component is loaded and ready to be displayed
-* `complete`: fires when the user has completed the verification flow
-* `state-change`: fires when the user transitions between verifications
-* `error`: fires when some error occurs in the flow
+- `display`: fires when the component is loaded and ready to be displayed
+- `complete`: fires when the user has completed the verification flow
+- `state-change`: fires when the user transitions between verifications
+- `error`: fires when some error occurs in the flow
 
 ## Publishing
 
