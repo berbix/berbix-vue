@@ -1,6 +1,6 @@
 {
   "name": "berbix-vue",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Vue SDK for the Berbix Verify flow",
   "main": "index.js",
   "scripts": {
