@@ -8,8 +8,6 @@ export default {
 
     // Configuration
     templateKey: String,
-    email: String,
-    phone: String,
     clientToken: String,
 
     // Internal use
@@ -30,6 +28,8 @@ export default {
     // Deprecated
     continuation: String,
     role: String,
+    email: String,
+    phone: String,
   },
   data() {
     return {

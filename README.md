@@ -42,8 +42,6 @@ export default {
 ```js
 props: {
   clientToken: String,
-  email: String,
-  phone: String,
 }
 ```
 
