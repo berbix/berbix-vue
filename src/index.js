@@ -1,4 +1,4 @@
-const SDK_VERSION = '0.0.9';
+const SDK_VERSION = '0.0.10';
 
 export default {
   name: 'BerbixVerify',
