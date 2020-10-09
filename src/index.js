@@ -119,7 +119,11 @@ export default {
         this.show = false;
       } else if (data.type === "DISPLAY_IFRAME") {
         this.$emit("display");
-        this.marginTop = data.payload.margin;
+        if (data.payload.margin != null && data.payload.margin > 0) {
+          this.marginTop = data.payload.margin;
+        } else {
+          this.marginTop = 0;
+        }
         this.height = data.payload.height;
       } else if (data.type === "RESIZE_IFRAME") {
         this.height = data.payload.height;
