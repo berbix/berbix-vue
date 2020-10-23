@@ -91,6 +91,11 @@ export default {
       if (showInModal) {
         options.push("modal=true");
       }
+      var height = Math.max(
+        document.documentElement.clientHeight,
+        window.innerHeight || 0
+      );
+      options.push("max_height=" + height);
       return (
         this.makeBaseUrl() + "/" + version + "/verify?" + options.join("&")
       );
@@ -114,6 +119,11 @@ export default {
         this.show = false;
       } else if (data.type === "DISPLAY_IFRAME") {
         this.$emit("display");
+        if (data.payload.margin != null && data.payload.margin > 0) {
+          this.marginTop = data.payload.margin;
+        } else {
+          this.marginTop = 0;
+        }
         this.height = data.payload.height;
       } else if (data.type === "RESIZE_IFRAME") {
         this.height = data.payload.height;
@@ -164,8 +174,6 @@ export default {
       },
     });
     if (this.showInModal) {
-      const marginTop =
-        window.innerHeight > 500 ? (window.innerHeight - 500) * 0.25 : 10;
       return createElement(
         "div",
         {
@@ -191,7 +199,7 @@ export default {
                 "max-width": "500px",
                 "max-height": "100%",
                 overflow: "auto",
-                "margin-top": marginTop + "px",
+                "margin-top": this.marginTop + "px",
               },
             },
             [iframe]
