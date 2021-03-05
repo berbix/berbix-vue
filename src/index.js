@@ -1,36 +1,20 @@
-const SDK_VERSION = "0.0.12";
+export const SDK_VERSION = "0.0.12";
 
 export default {
   name: "BerbixVerify",
   props: {
-    // Required
-    clientId: String,
-
     // Configuration
-    templateKey: String,
     clientToken: String,
+    showCloseModalButton: Boolean,
+    showInModal: Boolean,
 
     // Internal use
-    environment: {
-      type: String,
-      default: "production",
-      validator: function (value) {
-        return ["production", "staging", "sandbox"].indexOf(value) !== -1;
-      },
-    },
     baseUrl: String,
     overrideUrl: String,
     version: {
       type: String,
       default: "v0",
     },
-    showInModal: Boolean,
-
-    // Deprecated
-    continuation: String,
-    role: String,
-    email: String,
-    phone: String,
   },
   data() {
     return {
@@ -41,66 +25,50 @@ export default {
   },
   methods: {
     makeBaseUrl() {
-      const { baseUrl, environment } = this;
-      if (baseUrl != null) {
+      const { baseUrl } = this;
+
+      if (baseUrl) {
         return baseUrl;
       }
-      switch (environment) {
-        case "sandbox":
-          return "https://verify.sandbox.berbix.com";
-        case "staging":
-          return "https://verify.staging.berbix.com";
-        default:
-          return "https://verify.berbix.com";
-      }
+
+      return "https://verify.berbix.com";
     },
     frameUrl() {
       const {
-        overrideUrl,
-        version,
-        clientId,
-        role,
-        templateKey,
-        email,
-        phone,
-        continuation,
         clientToken,
+        overrideUrl,
+        showCloseModalButton,
         showInModal,
+        version,
       } = this;
-      if (overrideUrl != null) {
+
+      if (overrideUrl) {
         return overrideUrl;
       }
-      const token = clientToken || continuation;
-      const template = templateKey || role;
+
+      const token = clientToken;
       var options = ["sdk=BerbixVue-" + SDK_VERSION];
-      if (clientId) {
-        options.push("client_id=" + clientId);
-      }
-      if (template) {
-        options.push("template=" + template);
-      }
-      if (email) {
-        options.push("email=" + encodeURIComponent(email));
-      }
-      if (phone) {
-        options.push("phone=" + encodeURIComponent(phone));
-      }
+
       if (token) {
         options.push("client_token=" + token);
       }
+
       if (showInModal) {
-        options.push("modal=true");
+        options.push(`modal=${showCloseModalButton ? 2 : 1}`);
       }
+
       var height = Math.max(
         document.documentElement.clientHeight,
         window.innerHeight || 0
       );
+
       options.push("max_height=" + height);
+
       return (
         this.makeBaseUrl() + "/" + version + "/verify?" + options.join("&")
       );
     },
-    handleMessage: function (e) {
+    handleMessage(e) {
       if (e.origin !== this.makeBaseUrl()) {
         return;
       }
@@ -109,21 +77,24 @@ export default {
       if (data.type === "VERIFICATION_COMPLETE") {
         try {
           if (data.payload.success) {
-            this.$emit("complete", { value: data.payload.code });
+            this.$emit("complete");
           } else {
             this.$emit("error", data);
           }
         } catch (e) {
           // Continue clean-up even if callback throws
         }
+
         this.show = false;
       } else if (data.type === "DISPLAY_IFRAME") {
         this.$emit("display");
+
         if (data.payload.margin != null && data.payload.margin > 0) {
           this.marginTop = data.payload.margin;
         } else {
           this.marginTop = 0;
         }
+
         this.height = data.payload.height;
       } else if (data.type === "RESIZE_IFRAME") {
         this.height = data.payload.height;
@@ -154,6 +125,7 @@ export default {
     if (!this.show) {
       return;
     }
+
     const iframe = createElement("iframe", {
       key: this.idx,
       style: {
@@ -173,6 +145,7 @@ export default {
         referrerpolicy: "no-referrer-when-downgrade",
       },
     });
+
     if (this.showInModal) {
       return createElement(
         "div",
