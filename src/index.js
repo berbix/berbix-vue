@@ -1,4 +1,5 @@
-export const SDK_VERSION = "0.0.12";
+const SDK_VERSION = "0.0.12";
+import { PayloadType, ModalType } from "./constants";
 
 export default {
   name: "BerbixVerify",
@@ -46,15 +47,20 @@ export default {
         return overrideUrl;
       }
 
-      const token = clientToken;
-      var options = ["sdk=BerbixVue-" + SDK_VERSION];
+      var options = [`sdk=BerbixVue-${SDK_VERSION}`];
 
-      if (token) {
-        options.push("client_token=" + token);
+      if (clientToken) {
+        options.push(`client_token=${clientToken}`);
       }
 
       if (showInModal) {
-        options.push(`modal=${showCloseModalButton ? 2 : 1}`);
+        options.push(
+          `modal=${
+            showCloseModalButton
+              ? ModalType.WithCloseButton
+              : ModalType.WithoutCloseButton
+          }`
+        );
       }
 
       var height = Math.max(
@@ -62,11 +68,9 @@ export default {
         window.innerHeight || 0
       );
 
-      options.push("max_height=" + height);
+      options.push(`max_height=${height}`);
 
-      return (
-        this.makeBaseUrl() + "/" + version + "/verify?" + options.join("&")
-      );
+      return `${this.makeBaseUrl()}/${version}/verify?${options.join("&")}`;
     },
     handleMessage(e) {
       if (e.origin !== this.makeBaseUrl()) {
@@ -74,40 +78,56 @@ export default {
       }
 
       var data = JSON.parse(e.data);
-      if (data.type === "VERIFICATION_COMPLETE") {
-        try {
-          if (data.payload.success) {
-            this.$emit("complete");
-          } else {
-            this.$emit("error", data);
+      const {
+        type,
+        payload: { success, margin, height },
+      } = data;
+
+      switch (type) {
+        case PayloadType.VerificationComplete:
+          try {
+            if (success) {
+              this.$emit("complete");
+            } else {
+              this.$emit("error", data);
+            }
+          } catch (e) {
+            // Continue cleanup even if callback throws
           }
-        } catch (e) {
-          // Continue clean-up even if callback throws
-        }
 
-        this.show = false;
-      } else if (data.type === "DISPLAY_IFRAME") {
-        this.$emit("display");
+          this.show = false;
+          break;
 
-        if (data.payload.margin != null && data.payload.margin > 0) {
-          this.marginTop = data.payload.margin;
-        } else {
-          this.marginTop = 0;
-        }
+        case PayloadType.DisplayIFrame:
+          this.$emit("display");
+          this.marginTop = margin || 0;
+          this.height = height;
+          break;
 
-        this.height = data.payload.height;
-      } else if (data.type === "RESIZE_IFRAME") {
-        this.height = data.payload.height;
-      } else if (data.type === "RELOAD_IFRAME") {
-        this.height = 0;
-        this.idx += 1;
-      } else if (data.type === "STATE_CHANGE") {
-        this.$emit("state-change", data.payload);
-      } else if (data.type === "EXIT_MODAL") {
-        this.$emit("close-modal");
-      } else if (data.type === "ERROR_RENDERED") {
-        this.$emit("error", data.payload);
-        this.height = 200;
+        case PayloadType.ResizeIFrame:
+          this.height = height;
+          break;
+
+        case PayloadType.ReloadIFrame:
+          this.height = 0;
+          this.idx += 1;
+          break;
+
+        case PayloadType.StateChange:
+          this.$emit("state-change", data.payload);
+          break;
+
+        case PayloadType.ExitModal:
+          this.$emit("close-modal");
+          break;
+
+        case PayloadType.ErrorRendered:
+          this.$emit("error", data.payload);
+          this.height = 200;
+          break;
+
+        default:
+          break;
       }
     },
   },
@@ -129,7 +149,7 @@ export default {
     const iframe = createElement("iframe", {
       key: this.idx,
       style: {
-        height: this.height + "px",
+        height: `${this.height}px`,
         "background-color": "transparent",
         border: "0 none transparent",
         padding: 0,
@@ -172,7 +192,7 @@ export default {
                 "max-width": "500px",
                 "max-height": "100%",
                 overflow: "auto",
-                "margin-top": this.marginTop + "px",
+                "margin-top": `${this.marginTop}px`,
               },
             },
             [iframe]

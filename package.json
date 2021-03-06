@@ -2,14 +2,16 @@
   "name": "berbix-vue",
   "version": "1.0.0",
   "description": "Vue SDK for the Berbix Verify flow",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "files": [
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "constants.d.ts"
   ],
   "scripts": {
-    "build": "babel src --out-file index.js & tsc"
+    "build": "yarn clean & babel src --out-file index.js & tsc",
+    "clean": "rm -f index.js index.d.ts"
   },
   "repository": {
     "type": "git",
