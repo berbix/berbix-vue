@@ -6,8 +6,7 @@
   "types": "./index.d.ts",
   "files": [
     "index.js",
-    "index.d.ts",
-    "constants.d.ts"
+    "index.d.ts"
   ],
   "scripts": {
     "build": "yarn clean & babel src --out-file index.js & tsc",

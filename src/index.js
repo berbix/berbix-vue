@@ -1,5 +1,19 @@
 const SDK_VERSION = "0.0.12";
-import { PayloadType, ModalType } from "./constants";
+
+const PayloadType = {
+  VerificationComplete: "VERIFICATION_COMPLETE",
+  DisplayIFrame: "DISPLAY_IFRAME",
+  ResizeIFrame: "RESIZE_IFRAME",
+  ReloadIFrame: "RELOAD_IFRAME",
+  StateChange: "STATE_CHANGE",
+  ExitModal: "EXIT_MODAL",
+  ErrorRendered: "ERROR_RENDERED",
+};
+
+const ModalType = {
+  WithoutCloseButton: 1,
+  WithCloseButton: 2,
+};
 
 export default {
   name: "BerbixVerify",
