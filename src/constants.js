@@ -1,5 +1,5 @@
 export const PayloadType = {
-  VerificationComplete: "VERIFICAITON_COMPLETE",
+  VerificationComplete: "VERIFICATION_COMPLETE",
   DisplayIFrame: "DISPLAY_IFRAME",
   ResizeIFrame: "RESIZE_IFRAME",
   ReloadIFrame: "RELOAD_IFRAME",
