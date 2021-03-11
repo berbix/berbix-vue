@@ -1,36 +1,35 @@
 const SDK_VERSION = "0.0.12";
 
+const PayloadType = {
+  VerificationComplete: "VERIFICATION_COMPLETE",
+  DisplayIFrame: "DISPLAY_IFRAME",
+  ResizeIFrame: "RESIZE_IFRAME",
+  ReloadIFrame: "RELOAD_IFRAME",
+  StateChange: "STATE_CHANGE",
+  ExitModal: "EXIT_MODAL",
+  ErrorRendered: "ERROR_RENDERED",
+};
+
+const ModalType = {
+  WithoutCloseButton: 1,
+  WithCloseButton: 2,
+};
+
 export default {
   name: "BerbixVerify",
   props: {
-    // Required
-    clientId: String,
-
     // Configuration
-    templateKey: String,
     clientToken: String,
+    showCloseModalButton: Boolean,
+    showInModal: Boolean,
 
     // Internal use
-    environment: {
-      type: String,
-      default: "production",
-      validator: function (value) {
-        return ["production", "staging", "sandbox"].indexOf(value) !== -1;
-      },
-    },
     baseUrl: String,
     overrideUrl: String,
     version: {
       type: String,
       default: "v0",
     },
-    showInModal: Boolean,
-
-    // Deprecated
-    continuation: String,
-    role: String,
-    email: String,
-    phone: String,
   },
   data() {
     return {
@@ -41,102 +40,108 @@ export default {
   },
   methods: {
     makeBaseUrl() {
-      const { baseUrl, environment } = this;
-      if (baseUrl != null) {
+      const { baseUrl } = this;
+
+      if (baseUrl) {
         return baseUrl;
       }
-      switch (environment) {
-        case "sandbox":
-          return "https://verify.sandbox.berbix.com";
-        case "staging":
-          return "https://verify.staging.berbix.com";
-        default:
-          return "https://verify.berbix.com";
-      }
+
+      return "https://verify.berbix.com";
     },
     frameUrl() {
       const {
-        overrideUrl,
-        version,
-        clientId,
-        role,
-        templateKey,
-        email,
-        phone,
-        continuation,
         clientToken,
+        overrideUrl,
+        showCloseModalButton,
         showInModal,
+        version,
       } = this;
-      if (overrideUrl != null) {
+
+      if (overrideUrl) {
         return overrideUrl;
       }
-      const token = clientToken || continuation;
-      const template = templateKey || role;
-      var options = ["sdk=BerbixVue-" + SDK_VERSION];
-      if (clientId) {
-        options.push("client_id=" + clientId);
+
+      var options = [`sdk=BerbixVue-${SDK_VERSION}`];
+
+      if (clientToken) {
+        options.push(`client_token=${clientToken}`);
       }
-      if (template) {
-        options.push("template=" + template);
-      }
-      if (email) {
-        options.push("email=" + encodeURIComponent(email));
-      }
-      if (phone) {
-        options.push("phone=" + encodeURIComponent(phone));
-      }
-      if (token) {
-        options.push("client_token=" + token);
-      }
+
       if (showInModal) {
-        options.push("modal=true");
+        options.push(
+          `modal=${
+            showCloseModalButton
+              ? ModalType.WithCloseButton
+              : ModalType.WithoutCloseButton
+          }`
+        );
       }
+
       var height = Math.max(
         document.documentElement.clientHeight,
         window.innerHeight || 0
       );
-      options.push("max_height=" + height);
-      return (
-        this.makeBaseUrl() + "/" + version + "/verify?" + options.join("&")
-      );
+
+      options.push(`max_height=${height}`);
+
+      return `${this.makeBaseUrl()}/${version}/verify?${options.join("&")}`;
     },
-    handleMessage: function (e) {
+    handleMessage(e) {
       if (e.origin !== this.makeBaseUrl()) {
         return;
       }
 
       var data = JSON.parse(e.data);
-      if (data.type === "VERIFICATION_COMPLETE") {
-        try {
-          if (data.payload.success) {
-            this.$emit("complete", { value: data.payload.code });
-          } else {
-            this.$emit("error", data);
+      const {
+        type,
+        payload: { success, margin, height },
+      } = data;
+
+      switch (type) {
+        case PayloadType.VerificationComplete:
+          try {
+            if (success) {
+              this.$emit("complete");
+            } else {
+              this.$emit("error", data);
+            }
+          } catch (e) {
+            // Continue cleanup even if callback throws
           }
-        } catch (e) {
-          // Continue clean-up even if callback throws
-        }
-        this.show = false;
-      } else if (data.type === "DISPLAY_IFRAME") {
-        this.$emit("display");
-        if (data.payload.margin != null && data.payload.margin > 0) {
-          this.marginTop = data.payload.margin;
-        } else {
-          this.marginTop = 0;
-        }
-        this.height = data.payload.height;
-      } else if (data.type === "RESIZE_IFRAME") {
-        this.height = data.payload.height;
-      } else if (data.type === "RELOAD_IFRAME") {
-        this.height = 0;
-        this.idx += 1;
-      } else if (data.type === "STATE_CHANGE") {
-        this.$emit("state-change", data.payload);
-      } else if (data.type === "EXIT_MODAL") {
-        this.$emit("close-modal");
-      } else if (data.type === "ERROR_RENDERED") {
-        this.$emit("error", data.payload);
-        this.height = 200;
+
+          this.show = false;
+          break;
+
+        case PayloadType.DisplayIFrame:
+          this.$emit("display");
+          this.marginTop = margin || 0;
+          this.height = height;
+          break;
+
+        case PayloadType.ResizeIFrame:
+          this.height = height;
+          break;
+
+        case PayloadType.ReloadIFrame:
+          this.height = 0;
+          this.idx += 1;
+          break;
+
+        case PayloadType.StateChange:
+          this.$emit("state-change", data.payload);
+          break;
+
+        case PayloadType.ExitModal:
+          this.$emit("close-modal");
+          break;
+
+        case PayloadType.ErrorRendered:
+          this.$emit("error", data.payload);
+          this.height = 200;
+          break;
+
+        default:
+          break;
       }
     },
   },
@@ -154,10 +159,11 @@ export default {
     if (!this.show) {
       return;
     }
+
     const iframe = createElement("iframe", {
       key: this.idx,
       style: {
-        height: this.height + "px",
+        height: `${this.height}px`,
         "background-color": "transparent",
         border: "0 none transparent",
         padding: 0,
@@ -173,6 +179,7 @@ export default {
         referrerpolicy: "no-referrer-when-downgrade",
       },
     });
+
     if (this.showInModal) {
       return createElement(
         "div",
@@ -199,7 +206,7 @@ export default {
                 "max-width": "500px",
                 "max-height": "100%",
                 overflow: "auto",
-                "margin-top": this.marginTop + "px",
+                "margin-top": `${this.marginTop}px`,
               },
             },
             [iframe]

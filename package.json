@@ -1,10 +1,16 @@
 {
   "name": "berbix-vue",
-  "version": "0.0.12",
+  "version": "1.0.0",
   "description": "Vue SDK for the Berbix Verify flow",
-  "main": "index.js",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "scripts": {
-    "build": "babel src --out-file index.js"
+    "build": "yarn clean & babel src --out-file index.js & tsc",
+    "clean": "rm -f index.js index.d.ts"
   },
   "repository": {
     "type": "git",
@@ -15,9 +21,6 @@
     "vue",
     "identity"
   ],
-  "files": [
-    "index.js"
-  ],
   "author": "Eric Levine <eric@berbix.com>",
   "license": "MIT",
   "bugs": {
@@ -25,8 +28,11 @@
   },
   "homepage": "https://github.com/berbix/berbix-vue#readme",
   "devDependencies": {
-    "@babel/cli": "7.12.13",
-    "@babel/core": "7.12.13",
-    "@babel/preset-env": "7.12.13"
+    "@babel/cli": "7.13.10",
+    "@babel/core": "7.13.10",
+    "@babel/preset-env": "7.13.10"
+  },
+  "dependencies": {
+    "typescript": "^4.2.3"
   }
 }

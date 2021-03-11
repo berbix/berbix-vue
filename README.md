@@ -42,6 +42,8 @@ export default {
 ```js
 props: {
   clientToken: String,
+  showInModal: Boolean,
+  showCloseModalButton: Boolean,
 }
 ```
 
