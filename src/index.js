@@ -1,4 +1,4 @@
-const SDK_VERSION = "0.0.12";
+const SDK_VERSION = "1.0.0";
 
 const PayloadType = {
   VerificationComplete: "VERIFICATION_COMPLETE",
