@@ -36,6 +36,7 @@
     "typescript": "^4.2.3"
   },
   "resolutions": {
-    "path-parse": "^1.0.7"
+    "path-parse": "^1.0.7",
+    "@nicolo-ribaudo/chokidar-2": "2.1.8-no-fsevents.2"
   }
 }
