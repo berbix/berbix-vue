@@ -34,5 +34,8 @@
   },
   "dependencies": {
     "typescript": "^4.2.3"
+  },
+  "resolutions": {
+    "path-parse": "^1.0.7"
   }
 }
