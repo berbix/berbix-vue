@@ -1,4 +1,6 @@
-const SDK_VERSION = "1.0.1";
+import { h } from 'vue';
+
+const SDK_VERSION = "3.0.0";
 
 const PayloadType = {
   VerificationComplete: "VERIFICATION_COMPLETE",
@@ -155,12 +157,12 @@ export default {
       window.removeEventListener("message", this.handleMessage);
     }
   },
-  render(createElement) {
+  render() {
     if (!this.show) {
       return;
     }
 
-    const iframe = createElement("iframe", {
+    const iframe = h("iframe", {
       key: this.idx,
       style: {
         height: `${this.height}px`,
@@ -172,16 +174,14 @@ export default {
         width: "100%",
         overflow: "hidden",
       },
-      attrs: {
-        src: this.frameUrl(),
-        allow: "camera",
-        scrolling: "no",
-        referrerpolicy: "no-referrer-when-downgrade",
-      },
+      src: this.frameUrl(),
+      allow: "camera",
+      scrolling: "no",
+      referrerpolicy: "no-referrer-when-downgrade"
     });
 
     if (this.showInModal) {
-      return createElement(
+      return h(
         "div",
         {
           style: {
@@ -197,7 +197,7 @@ export default {
           },
         },
         [
-          createElement(
+          h(
             "div",
             {
               style: {
