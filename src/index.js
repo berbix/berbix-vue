@@ -1,6 +1,6 @@
 import { h } from 'vue';
 
-const SDK_VERSION = "1.0.1";
+const SDK_VERSION = "3.0.0";
 
 const PayloadType = {
   VerificationComplete: "VERIFICATION_COMPLETE",
