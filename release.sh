@@ -13,4 +13,4 @@ git tag -a $VERSION -m "Version $VERSION"
 git push --follow-tags
 
 yarn build
-yarn publish
+yarn publish --tag beta
